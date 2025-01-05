@@ -1,0 +1,144 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Program Dev\\Sync2Oss\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\services\\mainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:services\\mainservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\utils\\httputils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:utils\\httputils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\sync2oss.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:sync2oss.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\sync2oss.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:sync2oss.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|d:\\program dev\\sync2oss\\models\\releasemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{68208670-0A5C-4164-B52B-D63DDBF8CBA8}|Sync2Oss.csproj|solutionrelative:models\\releasemodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainService.cs",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Services\\MainService.cs",
+              "RelativeDocumentMoniker": "Services\\MainService.cs",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Services\\MainService.cs",
+              "RelativeToolTip": "Services\\MainService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-05T14:17:49.689Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HttpUtils.cs",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Utils\\HttpUtils.cs",
+              "RelativeDocumentMoniker": "Utils\\HttpUtils.cs",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Utils\\HttpUtils.cs",
+              "RelativeToolTip": "Utils\\HttpUtils.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-05T13:18:28.719Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ReleaseModel.cs",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Models\\ReleaseModel.cs",
+              "RelativeDocumentMoniker": "Models\\ReleaseModel.cs",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Models\\ReleaseModel.cs",
+              "RelativeToolTip": "Models\\ReleaseModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenGroupName": "Models",
+              "WhenOpened": "2025-01-05T13:11:16.215Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Sync2Oss",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Sync2Oss.csproj",
+              "RelativeDocumentMoniker": "Sync2Oss.csproj",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Sync2Oss.csproj",
+              "RelativeToolTip": "Sync2Oss.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-01-05T12:50:45.052Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Sync2Oss",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Sync2Oss.csproj",
+              "RelativeDocumentMoniker": "Sync2Oss.csproj",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Sync2Oss.csproj",
+              "RelativeToolTip": "Sync2Oss.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-01-05T11:18:50.11Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Utils.cs",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Utils.cs",
+              "RelativeDocumentMoniker": "Utils.cs",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Utils.cs",
+              "RelativeToolTip": "Utils.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAAAQwGwAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-05T11:05:02.024Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Program Dev\\Sync2Oss\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Program Dev\\Sync2Oss\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAACMAAAAAAAAAAAAAACwAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "OverriddenGroupName": "",
+              "WhenOpened": "2025-01-05T10:49:31.586Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
