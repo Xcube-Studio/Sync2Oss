@@ -16,3 +16,6 @@ D:\Program Dev\Sync2Oss\obj\Debug\net8.0\refint\Sync2Oss.dll
 D:\Program Dev\Sync2Oss\obj\Debug\net8.0\Sync2Oss.pdb
 D:\Program Dev\Sync2Oss\obj\Debug\net8.0\Sync2Oss.genruntimeconfig.cache
 D:\Program Dev\Sync2Oss\obj\Debug\net8.0\ref\Sync2Oss.dll
+D:\Program Dev\Sync2Oss\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+D:\Program Dev\Sync2Oss\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+D:\Program Dev\Sync2Oss\obj\Debug\net8.0\Sync2Oss.sourcelink.json

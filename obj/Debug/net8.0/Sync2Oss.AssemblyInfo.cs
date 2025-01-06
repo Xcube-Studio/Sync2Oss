@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Sync2Oss")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7e7ef36eb51e0bf9dd4b497fd6a9a4d844a6e3c9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Sync2Oss")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Sync2Oss")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

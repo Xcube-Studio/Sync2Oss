@@ -10,6 +10,7 @@
         "dependencies": {
           "Aliyun.OSS.SDK.NetCore": "2.14.1",
           "Microsoft.DotNet.ILCompiler": "8.0.11",
+          "Microsoft.Extensions.DependencyInjection": "9.0.0",
           "Microsoft.NET.ILLink.Tasks": "8.0.11",
           "Newtonsoft.Json": "13.0.3"
         },
@@ -26,6 +27,25 @@
         }
       },
       "Microsoft.DotNet.ILCompiler/8.0.11": {},
+      "Microsoft.Extensions.DependencyInjection/9.0.0": {
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
+        "runtime": {
+          "lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809"
+          }
+        }
+      },
       "Microsoft.NET.ILLink.Tasks/8.0.11": {},
       "Newtonsoft.Json/13.0.3": {
         "runtime": {
@@ -56,6 +76,20 @@
       "sha512": "sha512-9SWRKJzFrE07m77G/9jSR1lqdlPmKCsQX1UflZEFBGYzmOZ53sjLEEcAiWtnWY0QJ750h2ahciOPO8oVjztQ0g==",
       "path": "microsoft.dotnet.ilcompiler/8.0.11",
       "hashPath": "microsoft.dotnet.ilcompiler.8.0.11.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-MCPrg7v3QgNMr0vX4vzRXvkNGgLg8vKWX0nKCWUxu2uPyMsaRgiRc1tHBnbTcfJMhMKj2slE/j2M9oGkd25DNw==",
+      "path": "microsoft.extensions.dependencyinjection/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.9.0.0.nupkg.sha512"
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+6f2qv2a3dLwd5w6JanPIPs47CxRbnk+ZocMJUhv9NxP88VlOcJYZs9jY+MYSjxvady08bUZn6qgiNh7DadGgg==",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/9.0.0",
+      "hashPath": "microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512"
     },
     "Microsoft.NET.ILLink.Tasks/8.0.11": {
       "type": "package",

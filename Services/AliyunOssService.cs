@@ -26,11 +26,25 @@ public class AliyunOssService
         _ossClient = ossClient;
     }
 
+    public async Task PutSymlink(string destinationObjectName,string symLink)
+    {
+        try
+        {
+            _ossClient.SetRegion(Region);
+            //symLink = Path.Combine("https://source.cubestructor.cc", symLink);
+            _ossClient.CreateSymlink(_bucketName, symLink, destinationObjectName);
+            Console.WriteLine($"[INFO] Put symlink {symLink} to {destinationObjectName} successfully.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[ERROR] Put symlink {symLink} to {destinationObjectName} failed: {e.Message}");
+        }
+    }
     public async Task UploadFileAsync(string localFilePath, string remoteFilePath)
     {
         try
         {
-            _ossClient.SetRegion(region);
+            _ossClient.SetRegion(Region);
 
             if (await IsRemoteFileExistAsync(remoteFilePath))
             {
@@ -38,7 +52,7 @@ public class AliyunOssService
                 Console.WriteLine($"[INFO] Existing file {remoteFilePath} deleted.");
             }
 
-            _ossClient.PutObject(_bucketName, remoteFilePath, localFilePath)
+            _ossClient.PutObject(_bucketName, remoteFilePath, localFilePath);
             Console.WriteLine($"[INFO] Upload file {localFilePath} to {remoteFilePath} successfully.");
         }
         catch (Exception e)
@@ -51,12 +65,12 @@ public class AliyunOssService
     {
         try
         {
-            _ossClient.SetRegion(region);
-            return _ossClient.DoesObjectExist(_bucketName, objectName);
+            _ossClient.SetRegion(Region);
+            return _ossClient.DoesObjectExist(_bucketName, remoteFilePath);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"[ERROR] Check object {objectName} exist failed: {e.Message}");
+            Console.WriteLine($"[ERROR] Check object {remoteFilePath} exist failed: {e.Message}");
             return false;
         }
     }

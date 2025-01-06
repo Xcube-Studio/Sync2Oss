@@ -15,7 +15,14 @@ public static class HttpUtils
 
     public static async Task DownloadFileAsync(string url, string path)
     {
+        string directoryPath = Path.GetDirectoryName(path);
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         using var responseStream = await DefaultClient.GetStreamAsync(url);
+
         using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
 
         byte[] downloadBufferArr = ArrayPool<byte>.Shared.Rent(DownloadBufferSize);
