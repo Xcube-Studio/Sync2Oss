@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "Sync2Oss": {
-      "commandName": "Project",
-      "commandLineArgs": "LTAI5tKJWJe4S8JTGqf6DHq4 v6SSMIVcEFgBVSbItmvV0nRPYTKTLR oss-cn-shanghai.aliyuncs.com xingsora-oss-aliyun"
-    }
-  }
-}
