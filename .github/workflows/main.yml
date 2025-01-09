@@ -25,4 +25,4 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Run
-      run: ./bin/Release/net8.0/Sync2Oss ${{ALIYUN_ACCESSKEY_ID}} ${{ALIYUN_ACCESSKEY_SECRET}} ${{ALIYUN_OSS_ENDPOINT}} ${{ALIYUN_OSS_BUCKETNAME}}
+      run: ./bin/Release/net8.0/Sync2Oss ${{ secrets.ALIYUN_ACCESSKEY_ID }} ${{ secrets.ALIYUN_ACCESSKEY_SECRET }} ${{ secrets.ALIYUN_OSS_ENDPOINT }} ${{ secrets.ALIYUN_OSS_BUCKETNAME }}
