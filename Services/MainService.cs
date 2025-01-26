@@ -46,7 +46,7 @@ public class MainService
                 {
                     Console.WriteLine($"[WRAN] Remote file {remoteFilePath} already exists. Skipped {release.TagName}.");
                     break;
-                }
+                } 
 
                 await HttpUtils.DownloadFileAsync(assest.DownloadUrl, localFilePath);
                 Console.WriteLine($"[INFO] Download URL: {assest.DownloadUrl}");
