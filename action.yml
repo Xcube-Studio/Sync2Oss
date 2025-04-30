@@ -95,7 +95,7 @@ runs:
         [ -n "${{ inputs.localPath }}" ] && ARGS+=("--localPath" "${{ inputs.localPath }}")
 
         if [ "$RUNNER_OS" = "Windows" ]; then
-          cmd.exe /C "$EXE_PATH" "${ARGS[@]}"
+          cmd.exe /C "\ "$EXE_PATH" "${ARGS[@]}" "
         else
           chmod +x "$EXE_PATH"
           "$EXE_PATH" "${ARGS[@]}"
