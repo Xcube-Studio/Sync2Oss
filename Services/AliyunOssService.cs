@@ -1,7 +1,4 @@
 ﻿using Aliyun.OSS;
-using Aliyun.OSS.Common;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Sync2Oss.Services;
 
@@ -14,7 +11,7 @@ public class AliyunOssService
 
     private readonly OssClient _ossClient;
 
-    public const string Region = "cn-shanghai";
+    public string _region = "cn-shanghai";
 
     public AliyunOssService(Dictionary<string, string> apikeys, OssClient ossClient)
     {
@@ -22,15 +19,17 @@ public class AliyunOssService
         _accessKeySecret = apikeys["accessKeySecret"];
         _endpoint = apikeys["endpoint"];
         _bucketName = apikeys["bucketName"];
-
+        _region = apikeys["region"];
+        
         _ossClient = ossClient;
+        
     }
 
     public async Task PutSymlink(string destinationObjectName,string symLink)
     {
         try
         {
-            _ossClient.SetRegion(Region);
+            _ossClient.SetRegion(_region);
             //symLink = Path.Combine("https://source.cubestructor.cc", symLink);
             _ossClient.CreateSymlink(_bucketName, symLink, destinationObjectName);
             Console.WriteLine($"[INFO] Put symlink {symLink} to {destinationObjectName} successfully.");
@@ -44,7 +43,7 @@ public class AliyunOssService
     {
         try
         {
-            _ossClient.SetRegion(Region);
+            _ossClient.SetRegion(_region);
 
             if (await IsRemoteFileExistAsync(remoteFilePath))
             {
@@ -65,7 +64,7 @@ public class AliyunOssService
     {
         try
         {
-            _ossClient.SetRegion(Region);
+            _ossClient.SetRegion(_region);
             return _ossClient.DoesObjectExist(_bucketName, remoteFilePath);
         }
         catch (Exception e)

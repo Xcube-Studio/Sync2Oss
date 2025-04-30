@@ -19,6 +19,10 @@ public class ReleaseModel
 
     [JsonPropertyName("assets")]
     public required List<AssetModel> Assets { get; set; }
+    [JsonPropertyName("prerelease")]
+    public required bool Prerelease { get; set; }
+    [JsonPropertyName("published_at")]
+    public required DateTime PublishedAt { get; set; }
 }
 
 [JsonSerializable(typeof(int))]
