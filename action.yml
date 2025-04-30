@@ -1,0 +1,81 @@
+name: "Sync2OSS"
+description: "Sync files to Aliyun OSS with .NET 8"
+author: "XingSora"
+
+inputs:
+  accessKeyId:
+    description: "Aliyun AccessKeyId"
+    required: true
+  accessKeySecret:
+    description: "Aliyun AccessKeySecret"
+    required: true
+  endpoint:
+    description: "Aliyun Endpoint"
+    required: true
+  bucketName:
+    description: "Aliyun BucketName"
+    required: true
+  fromRelease:
+    description: "是否从Release上传"
+    default: "true"
+  repoUrl:
+    description: "GitHub仓库地址"
+    required: false
+  isPre:
+    description: "是否上传PreRelease"
+    default: "false"
+  keepCount:
+    description: "保留最新几个版本"
+    default: "2"
+  remoteDir:
+    description: "上传到远程目录"
+    required: false
+  addSymlink:
+    description: "是否添加软链接"
+    default: "false"
+  localPath:
+    description: "本地文件/文件夹路径（fromRelease为false时使用）"
+    required: false
+  region:
+    description: "阿里云OSS区域"
+    default: "cn-shanghai"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Build Project
+      shell: bash
+      run: |
+        dotnet restore
+        dotnet build -c Release --nologo
+        dotnet publish -c Release -o publish --nologo
+      working-directory: ./src
+
+    - name: Run Sync2OSS
+      shell: bash
+      run: |
+        # 处理Windows路径问题
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          EXE_PATH="./src/publish/sync2oss.exe"
+        else
+          EXE_PATH="./src/publish/sync2oss"
+        fi
+
+        "$EXE_PATH" \
+          --accessKeyId "${{ inputs.accessKeyId }}" \
+          --accessKeySecret "${{ inputs.accessKeySecret }}" \
+          --endpoint "${{ inputs.endpoint }}" \
+          --bucketName "${{ inputs.bucketName }}" \
+          --fromRelease "${{ inputs.fromRelease }}" \
+          ${INPUTS_REPOURL:+--repoUrl "${{ inputs.repoUrl }}"} \
+          --isPre "${{ inputs.isPre }}" \
+          --keepCount "${{ inputs.keepCount }}" \
+          ${INPUTS_REMOTEDIR:+--remoteDir "${{ inputs.remoteDir }}"} \
+          --addSymlink "${{ inputs.addSymlink }}" \
+          ${INPUTS_LOCALPATH:+--localPath "${{ inputs.localPath }}"} \
+          --region "${{ inputs.region }}"
