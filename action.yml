@@ -43,31 +43,41 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup dotnet
+    - name: Checkout Sync2Oss Repository
+      uses: actions/checkout@v4
+      with:
+        path: sync2oss_workspace
+
+    - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
 
-    - name: Build Project
+    - name: Build Sync2OSS
       shell: bash
       run: |
-        PROJECT_DIR="${{ github.workspace }}/src"
-        
+        PROJECT_DIR="${{ github.workspace }}/sync2oss_workspace/src"
+
+        echo "Restoring dependencies..."
         dotnet restore "$PROJECT_DIR"
-        dotnet build "$PROJECT_DIR" -c Release --nologo
+
+        echo "Building project..."
+        dotnet build "$PROJECT_DIR" -c Release --nologo -v:detailed
+
+        echo "Publishing project..."
         dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
-        
+
     - name: Run Sync2OSS
       shell: bash
       run: |
-
         if [ "$RUNNER_OS" = "Windows" ]; then
-          EXE_PATH="${{ github.workspace }}/src/publish/sync2oss.exe"
-          # 转换路径分隔符为Windows格式
+          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/publish/sync2oss.exe"
           EXE_PATH=$(echo "$EXE_PATH" | sed 's/\//\\/g')
         else
-          EXE_PATH="${{ github.workspace }}/src/publish/sync2oss"
+          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/publish/sync2oss"
         fi
+
+        echo "Executable Path: $EXE_PATH"
 
         ARGS=(
           "--accessKeyId" "${{ inputs.accessKeyId }}"
@@ -80,11 +90,9 @@ runs:
           "--region" "${{ inputs.region }}"
         )
 
-
         [ -n "${{ inputs.repoUrl }}" ] && ARGS+=("--repoUrl" "${{ inputs.repoUrl }}")
         [ -n "${{ inputs.remoteDir }}" ] && ARGS+=("--remoteDir" "${{ inputs.remoteDir }}")
         [ -n "${{ inputs.localPath }}" ] && ARGS+=("--localPath" "${{ inputs.localPath }}")
-
 
         if [ "$RUNNER_OS" = "Windows" ]; then
           cmd.exe /C "call \"$EXE_PATH\"" "${ARGS[@]}"
