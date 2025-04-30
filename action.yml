@@ -63,7 +63,7 @@ runs:
         dotnet restore "$PROJECT_DIR"
 
         echo "Building project..."
-        dotnet build "$PROJECT_DIR" -c Release --nologo -v:detailed
+        dotnet build "$PROJECT_DIR" -c Release --nologo
 
         echo "Publishing project..."
         dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
@@ -72,8 +72,7 @@ runs:
       shell: bash
       run: |
         if [ "$RUNNER_OS" = "Windows" ]; then
-          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/publish/sync2oss.exe"
-          EXE_PATH=$(echo "$EXE_PATH" | sed 's/\//\\/g')
+          EXE_PATH="${{ github.workspace }}\sync2oss_workspace\src\publish\sync2oss.exe"
         else
           EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/publish/sync2oss"
         fi
