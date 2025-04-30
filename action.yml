@@ -94,10 +94,9 @@ runs:
         [ -n "${{ inputs.remoteDir }}" ] && ARGS+=("--remoteDir" "${{ inputs.remoteDir }}")
         [ -n "${{ inputs.localPath }}" ] && ARGS+=("--localPath" "${{ inputs.localPath }}")
 
-        if [ "$RUNNER_OS" = "Windows" ]; then
-          cmd.exe /C "\ "$EXE_PATH" "${ARGS[@]}" "
-          cmd.exe /C "dir /S"
-        else
-          chmod +x "$EXE_PATH"
+        if [ -f "$EXE_PATH" ]; then
           "$EXE_PATH" "${ARGS[@]}"
+        else
+          echo "Error: Executable not found at $EXE_PATH"
+          exit 1
         fi
