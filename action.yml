@@ -47,6 +47,7 @@ runs:
       uses: actions/checkout@v4
       with:
         path: sync2oss_workspace
+        repository: xcube-studio/sync2oss
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
