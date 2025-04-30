@@ -96,6 +96,7 @@ runs:
 
         if [ "$RUNNER_OS" = "Windows" ]; then
           cmd.exe /C "\ "$EXE_PATH" "${ARGS[@]}" "
+          cmd.exe /C "dir /S"
         else
           chmod +x "$EXE_PATH"
           "$EXE_PATH" "${ARGS[@]}"
