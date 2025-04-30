@@ -51,31 +51,44 @@ runs:
     - name: Build Project
       shell: bash
       run: |
-        dotnet restore
-        dotnet build -c Release --nologo
-        dotnet publish -c Release -o publish --nologo
-      working-directory: ./src
-
+        PROJECT_DIR="${{ github.workspace }}/src"
+        
+        dotnet restore "$PROJECT_DIR"
+        dotnet build "$PROJECT_DIR" -c Release --nologo
+        dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
+        
     - name: Run Sync2OSS
       shell: bash
       run: |
-        # 处理Windows路径问题
+
         if [ "$RUNNER_OS" = "Windows" ]; then
-          EXE_PATH="./src/publish/sync2oss.exe"
+          EXE_PATH="${{ github.workspace }}/src/publish/sync2oss.exe"
+          # 转换路径分隔符为Windows格式
+          EXE_PATH=$(echo "$EXE_PATH" | sed 's/\//\\/g')
         else
-          EXE_PATH="./src/publish/sync2oss"
+          EXE_PATH="${{ github.workspace }}/src/publish/sync2oss"
         fi
 
-        "$EXE_PATH" \
-          --accessKeyId "${{ inputs.accessKeyId }}" \
-          --accessKeySecret "${{ inputs.accessKeySecret }}" \
-          --endpoint "${{ inputs.endpoint }}" \
-          --bucketName "${{ inputs.bucketName }}" \
-          --fromRelease "${{ inputs.fromRelease }}" \
-          ${INPUTS_REPOURL:+--repoUrl "${{ inputs.repoUrl }}"} \
-          --isPre "${{ inputs.isPre }}" \
-          --keepCount "${{ inputs.keepCount }}" \
-          ${INPUTS_REMOTEDIR:+--remoteDir "${{ inputs.remoteDir }}"} \
-          --addSymlink "${{ inputs.addSymlink }}" \
-          ${INPUTS_LOCALPATH:+--localPath "${{ inputs.localPath }}"} \
-          --region "${{ inputs.region }}"
+        ARGS=(
+          "--accessKeyId" "${{ inputs.accessKeyId }}"
+          "--accessKeySecret" "${{ inputs.accessKeySecret }}"
+          "--endpoint" "${{ inputs.endpoint }}"
+          "--bucketName" "${{ inputs.bucketName }}"
+          "--fromRelease" "${{ inputs.fromRelease }}"
+          "--isPre" "${{ inputs.isPre }}"
+          "--keepCount" "${{ inputs.keepCount }}"
+          "--region" "${{ inputs.region }}"
+        )
+
+
+        [ -n "${{ inputs.repoUrl }}" ] && ARGS+=("--repoUrl" "${{ inputs.repoUrl }}")
+        [ -n "${{ inputs.remoteDir }}" ] && ARGS+=("--remoteDir" "${{ inputs.remoteDir }}")
+        [ -n "${{ inputs.localPath }}" ] && ARGS+=("--localPath" "${{ inputs.localPath }}")
+
+
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          cmd.exe /C "call \"$EXE_PATH\"" "${ARGS[@]}"
+        else
+          chmod +x "$EXE_PATH"
+          "$EXE_PATH" "${ARGS[@]}"
+        fi
