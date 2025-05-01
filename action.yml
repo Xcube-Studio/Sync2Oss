@@ -96,6 +96,11 @@ runs:
 
         if [ -f "$EXE_PATH" ]; then
           "$EXE_PATH" "${ARGS[@]}"
+          EXIT_CODE=$?  # 获取程序的退出码
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "Error: The executable exited with code $EXIT_CODE"
+            exit $EXIT_CODE  # 显式退出并将错误码传递给 GitHub Actions
+          fi
         else
           echo "Error: Executable not found at $EXE_PATH"
           exit 1
