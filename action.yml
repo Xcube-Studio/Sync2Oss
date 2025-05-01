@@ -32,7 +32,7 @@ inputs:
     required: false
   addSymlink:
     description: "是否添加软链接"
-    default: "false"
+    default: false
   localPath:
     description: "本地文件/文件夹路径（fromRelease为false时使用）"
     required: false
@@ -88,6 +88,7 @@ runs:
           "--isPre" "${{ inputs.isPre }}"
           "--keepCount" "${{ inputs.keepCount }}"
           "--region" "${{ inputs.region }}"
+          "--addSymlink" "${{ inputs.addSymlink }}"
         )
 
         [ -n "${{ inputs.repoUrl }}" ] && ARGS+=("--repoUrl" "${{ inputs.repoUrl }}")
