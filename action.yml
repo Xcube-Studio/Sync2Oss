@@ -17,13 +17,13 @@ inputs:
     required: true
   fromRelease:
     description: "是否从Release上传"
-    default: "true"
+    default: true
   repoUrl:
     description: "GitHub仓库地址"
     required: false
   isPre:
     description: "是否上传PreRelease"
-    default: "false"
+    default: false
   keepCount:
     description: "保留最新几个版本"
     default: "2"
@@ -68,41 +68,40 @@ runs:
         #echo "Publishing project..."
         #dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
 
-    - name: Run Sync2OSS
-      shell: bash
+    - name: Run Sync2OSS (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
       run: |
-        if [ "$RUNNER_OS" = "Windows" ]; then
-          EXE_PATH="${{ github.workspace }}\sync2oss_workspace\src\build\sync2oss.exe"
-        else
-          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/build/sync2oss"
-        fi
+        "%GITHUB_WORKSPACE%\sync2oss_workspace\src\build\sync2oss.exe" ^
+        --accessKeyId "${{ inputs.accessKeyId }}" ^
+        --accessKeySecret "${{ inputs.accessKeySecret }}" ^
+        --endpoint "${{ inputs.endpoint }}" ^
+        --bucketName "${{ inputs.bucketName }}" ^
+        --fromRelease "${{ inputs.fromRelease }}" ^
+        --isPre "${{ inputs.isPre }}" ^
+        --keepCount "${{ inputs.keepCount }}" ^
+        --region "${{ inputs.region }}" ^
+        --addSymlink "${{ inputs.addSymlink }}" ^
+        --repoUrl "${{ inputs.repoUrl }}" ^
+        --remoteDir "${{ inputs.remoteDir }}" ^
+        --localPath "${{ inputs.localPath }}"
 
-        echo "Executable Path: $EXE_PATH"
-
-        ARGS=(
-          "--accessKeyId" "${{ inputs.accessKeyId }}"
-          "--accessKeySecret" "${{ inputs.accessKeySecret }}"
-          "--endpoint" "${{ inputs.endpoint }}"
-          "--bucketName" "${{ inputs.bucketName }}"
-          "--fromRelease" "${{ inputs.fromRelease }}"
-          "--isPre" "${{ inputs.isPre }}"
-          "--keepCount" "${{ inputs.keepCount }}"
-          "--region" "${{ inputs.region }}"
-          "--addSymlink" "${{ inputs.addSymlink }}"
-        )
-
-        [ -n "${{ inputs.repoUrl }}" ] && ARGS+=("--repoUrl" "${{ inputs.repoUrl }}")
-        [ -n "${{ inputs.remoteDir }}" ] && ARGS+=("--remoteDir" "${{ inputs.remoteDir }}")
-        [ -n "${{ inputs.localPath }}" ] && ARGS+=("--localPath" "${{ inputs.localPath }}")
-
-        if [ -f "$EXE_PATH" ]; then
-          "$EXE_PATH" "${ARGS[@]}"
-          EXIT_CODE=$?  # 获取程序的退出码
-          if [ $EXIT_CODE -ne 0 ]; then
-            echo "Error: The executable exited with code $EXIT_CODE"
-            exit $EXIT_CODE  # 显式退出并将错误码传递给 GitHub Actions
-          fi
-        else
-          echo "Error: Executable not found at $EXE_PATH"
-          exit 1
-        fi
+    - name: Run Sync2OSS (Linux/macOS)
+      if: runner.os != 'Windows'
+      shell: sh
+      run: |
+        EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/build/sync2oss"
+        chmod +x "$EXE_PATH"
+        "$EXE_PATH" \
+        --accessKeyId "${{ inputs.accessKeyId }}" \
+        --accessKeySecret "${{ inputs.accessKeySecret }}" \
+        --endpoint "${{ inputs.endpoint }}" \
+        --bucketName "${{ inputs.bucketName }}" \
+        --fromRelease "${{ inputs.fromRelease }}" \
+        --isPre "${{ inputs.isPre }}" \
+        --keepCount "${{ inputs.keepCount }}" \
+        --region "${{ inputs.region }}" \
+        --addSymlink "${{ inputs.addSymlink }}" \
+        ${{ inputs.repoUrl && format('--repoUrl "{0}"', inputs.repoUrl) }} \
+        ${{ inputs.remoteDir && format('--remoteDir "{0}"', inputs.remoteDir) }} \
+        ${{ inputs.localPath && format('--localPath "{0}"', inputs.localPath) }}
