@@ -100,7 +100,7 @@ internal class ConsoleService(
 
             logger.FetchingRepositoryReleases(repoUrl!);
 
-            string repoApi = repoUrl!.Replace("https://github.com/", "https://api.github.com/repos/") + "/releases";
+            string repoApi = $"https://api.github.com/repos/{repoUrl!.Replace("https://github.com/", "")}/releases";
             string releaseJsonText = await HttpUtils.DefaultClient.GetStringAsync(repoApi).ContinueWith(task => 
             {
                 if (task.IsFaulted)
