@@ -63,18 +63,18 @@ runs:
         dotnet restore "$PROJECT_DIR"
 
         echo "Building project..."
-        dotnet build "$PROJECT_DIR" -c Release --nologo
+        dotnet build "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/build" --nologo
 
-        echo "Publishing project..."
-        dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
+        #echo "Publishing project..."
+        #dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
 
     - name: Run Sync2OSS
       shell: bash
       run: |
         if [ "$RUNNER_OS" = "Windows" ]; then
-          EXE_PATH="${{ github.workspace }}\sync2oss_workspace\src\publish\sync2oss.exe"
+          EXE_PATH="${{ github.workspace }}\sync2oss_workspace\src\build\sync2oss.exe"
         else
-          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/publish/sync2oss"
+          EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/build/sync2oss"
         fi
 
         echo "Executable Path: $EXE_PATH"
