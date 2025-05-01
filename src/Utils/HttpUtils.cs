@@ -1,7 +1,6 @@
-﻿using System.Net;
-using System.IO;
-using System;
-using System.Buffers;
+﻿using System.Buffers;
+
+namespace Sync2Oss.Utils;
 
 public static class HttpUtils
 {
@@ -13,24 +12,23 @@ public static class HttpUtils
         DefaultClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
     }
 
-    public static async Task DownloadFileAsync(string url, string path)
+    public static async Task DownloadFileAsync(string url, FileInfo file)
     {
-        string directoryPath = Path.GetDirectoryName(path);
-        if (!Directory.Exists(directoryPath))
-        {
-            Directory.CreateDirectory(directoryPath);
-        }
+        if (!file.Directory!.Exists)
+            file.Directory.Create();
 
-        using var responseStream = await DefaultClient.GetStreamAsync(url);
-
-        using var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.None);
+        await using var responseStream = await DefaultClient.GetStreamAsync(url);
+        await using var fileStream = file.Open(FileMode.Create, FileAccess.ReadWrite, FileShare.None);
 
         byte[] downloadBufferArr = ArrayPool<byte>.Shared.Rent(DownloadBufferSize);
         Memory<byte> downloadBuffer = downloadBufferArr.AsMemory(0, DownloadBufferSize);
 
         int bytesRead = 0;
+
         while ((bytesRead = await responseStream.ReadAsync(downloadBuffer)) > 0)
             await fileStream.WriteAsync(downloadBuffer[0..bytesRead]);
+
+        await fileStream.FlushAsync();
 
         ArrayPool<byte>.Shared.Return(downloadBufferArr);
     }

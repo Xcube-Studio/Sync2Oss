@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Sync2Oss.Models;
 
@@ -18,18 +17,14 @@ public class ReleaseModel
     public required string TagName { get; set; }
 
     [JsonPropertyName("assets")]
-    public required List<AssetModel> Assets { get; set; }
+    public required AssetModel[] Assets { get; set; }
+
     [JsonPropertyName("prerelease")]
     public required bool Prerelease { get; set; }
+
     [JsonPropertyName("published_at")]
     public required DateTime PublishedAt { get; set; }
-}
 
-[JsonSerializable(typeof(int))]
-[JsonSerializable(typeof(bool))]
-[JsonSerializable(typeof(string))]
-[JsonSerializable(typeof(AssetModel))]
-[JsonSerializable(typeof(List<AssetModel>))]
-[JsonSerializable(typeof(ReleaseModel))]
-[JsonSerializable(typeof(ReleaseModel[]))]
-public partial class SerializerContext : JsonSerializerContext { }
+    [JsonPropertyName("body")]
+    public required string Body { set; get; }
+}
