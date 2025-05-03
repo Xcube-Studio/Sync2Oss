@@ -1,6 +1,9 @@
-name: "Sync2OSS"
-description: "Sync files to Aliyun OSS with .NET 9"
+name: "Vfiletransfer"
+description: "Upload a local file to private Aliyun OSS and expose a signed download URL for later GitHub Actions steps"
 author: "XingSora"
+branding:
+  icon: upload-cloud
+  color: white
 
 inputs:
   accessKeyId:
@@ -10,98 +13,84 @@ inputs:
     description: "Aliyun AccessKeySecret"
     required: true
   endpoint:
-    description: "Aliyun Endpoint"
+    description: "Aliyun OSS endpoint"
     required: true
   bucketName:
-    description: "Aliyun BucketName"
+    description: "Aliyun OSS bucket name"
     required: true
-  fromRelease:
-    description: "是否从Release上传"
-    default: true
-  repoUrl:
-    description: "GitHub仓库地址"
-    required: false
-  isPre:
-    description: "是否上传PreRelease"
-    default: false
-  keepCount:
-    description: "保留最新几个版本"
-    default: "2"
-  remoteDir:
-    description: "上传到远程目录"
-    required: false
-  addSymlink:
-    description: "是否添加软链接"
-    default: false
   localPath:
-    description: "本地文件/文件夹路径（fromRelease为false时使用）"
+    description: "Local file path to upload"
+    required: true
+  objectKey:
+    description: "Target OSS object key; defaults to the uploaded file name"
+    required: false
+  expiresInSeconds:
+    description: "Signed download URL validity in seconds"
+    default: "3600"
+    required: false
+  overwrite:
+    description: "Overwrite the remote object if it already exists"
+    default: "true"
     required: false
   region:
-    description: "阿里云OSS区域"
+    description: "Aliyun OSS region"
     default: "cn-shanghai"
+    required: false
+
+outputs:
+  downloadUrl:
+    description: "Signed download URL for the uploaded object"
+    value: ${{ steps.run.outputs.downloadUrl }}
+  signedUrl:
+    description: "Alias of downloadUrl"
+    value: ${{ steps.run.outputs.signedUrl }}
+  objectKey:
+    description: "Uploaded OSS object key"
+    value: ${{ steps.run.outputs.objectKey }}
+  ossUri:
+    description: "Uploaded OSS URI"
+    value: ${{ steps.run.outputs.ossUri }}
 
 runs:
   using: "composite"
   steps:
-    - name: Checkout Sync2Oss Repository
-      uses: actions/checkout@v4
-      with:
-        path: sync2oss_workspace
-        repository: xcube-studio/sync2oss
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
 
-    - name: Build Sync2OSS
-      shell: bash
+    - name: Build Vfiletransfer
+      shell: pwsh
+      working-directory: ${{ github.action_path }}
       run: |
-        PROJECT_DIR="${{ github.workspace }}/sync2oss_workspace/src"
+        $env:DOTNET_CLI_HOME = Join-Path (Get-Location) ".dotnet-cli"
+        $env:NUGET_PACKAGES = Join-Path (Get-Location) ".nuget\packages"
+        $restoreConfig = Join-Path (Get-Location) "NuGet.Config"
 
-        echo "Restoring dependencies..."
-        dotnet restore "$PROJECT_DIR"
+        dotnet restore ".\src\Sync2Oss.csproj" --configfile $restoreConfig
+        dotnet build ".\src\Sync2Oss.csproj" -c Release --no-restore -o ".\src\build" --nologo
 
-        echo "Building project..."
-        dotnet build "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/build" --nologo
-
-        #echo "Publishing project..."
-        #dotnet publish "$PROJECT_DIR" -c Release -o "$PROJECT_DIR/publish" --nologo
-
-    - name: Run Sync2OSS (Windows)
-      if: runner.os == 'Windows'
-      shell: cmd
+    - name: Run Vfiletransfer
+      id: run
+      shell: pwsh
+      working-directory: ${{ github.action_path }}
       run: |
-        "%GITHUB_WORKSPACE%\sync2oss_workspace\src\build\sync2oss.exe" ^
-        --accessKeyId "${{ inputs.accessKeyId }}" ^
-        --accessKeySecret "${{ inputs.accessKeySecret }}" ^
-        --endpoint "${{ inputs.endpoint }}" ^
-        --bucketName "${{ inputs.bucketName }}" ^
-        --fromRelease "${{ inputs.fromRelease }}" ^
-        --isPre "${{ inputs.isPre }}" ^
-        --keepCount "${{ inputs.keepCount }}" ^
-        --region "${{ inputs.region }}" ^
-        --addSymlink "${{ inputs.addSymlink }}" ^
-        --repoUrl "${{ inputs.repoUrl }}" ^
-        --remoteDir "${{ inputs.remoteDir }}" ^
-        --localPath "${{ inputs.localPath }}"
+        $env:DOTNET_CLI_HOME = Join-Path (Get-Location) ".dotnet-cli"
+        $dllPath = Join-Path (Get-Location) "src\build\Sync2Oss.dll"
+        $arguments = @(
+          $dllPath
+          "--accessKeyId", "${{ inputs.accessKeyId }}"
+          "--accessKeySecret", "${{ inputs.accessKeySecret }}"
+          "--endpoint", "${{ inputs.endpoint }}"
+          "--bucketName", "${{ inputs.bucketName }}"
+          "--localPath", "${{ inputs.localPath }}"
+          "--region", "${{ inputs.region }}"
+          "--expiresInSeconds", "${{ inputs.expiresInSeconds }}"
+          "--overwrite", "${{ inputs.overwrite }}"
+        )
 
-    - name: Run Sync2OSS (Linux/macOS)
-      if: runner.os != 'Windows'
-      shell: sh
-      run: |
-        EXE_PATH="${{ github.workspace }}/sync2oss_workspace/src/build/sync2oss"
-        chmod +x "$EXE_PATH"
-        "$EXE_PATH" \
-        --accessKeyId "${{ inputs.accessKeyId }}" \
-        --accessKeySecret "${{ inputs.accessKeySecret }}" \
-        --endpoint "${{ inputs.endpoint }}" \
-        --bucketName "${{ inputs.bucketName }}" \
-        --fromRelease "${{ inputs.fromRelease }}" \
-        --isPre "${{ inputs.isPre }}" \
-        --keepCount "${{ inputs.keepCount }}" \
-        --region "${{ inputs.region }}" \
-        --addSymlink "${{ inputs.addSymlink }}" \
-        ${{ inputs.repoUrl && format('--repoUrl "{0}"', inputs.repoUrl) }} \
-        ${{ inputs.remoteDir && format('--remoteDir "{0}"', inputs.remoteDir) }} \
-        ${{ inputs.localPath && format('--localPath "{0}"', inputs.localPath) }}
+        if ("${{ inputs.objectKey }}") {
+          $arguments += @("--objectKey", "${{ inputs.objectKey }}")
+        }
+
+        dotnet @arguments

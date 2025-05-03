@@ -1,94 +1,84 @@
-﻿using Aliyun.OSS;
+using Aliyun.OSS;
 using Microsoft.Extensions.Logging;
+using Sync2Oss.Models;
 
 namespace Sync2Oss.Services;
 
 public class AliyunOssService(
-    Dictionary<string, string> apikeys, 
+    Dictionary<string, string> apikeys,
     OssClient ossClient,
     ILogger<AliyunOssService> logger)
 {
-    //private readonly string _accessKeyId = apikeys["accessKeyId"];
-    //private readonly string _accessKeySecret = apikeys["accessKeySecret"];
-    //private readonly string _endpoint = apikeys["endpoint"];
-
     private string BucketName => apikeys["bucketName"];
 
     private string Region => apikeys["region"];
 
-    public void PutSymlink(string destinationObjectName, string symLink)
-    {
-        //symLink = Path.Combine("https://source.cubestructor.cc", symLink);
-
-        try
-        {
-            ossClient.SetRegion(Region);
-            ossClient.CreateSymlink(BucketName, symLink, destinationObjectName);
-
-            logger.PutSymlinkSucceed(symLink, destinationObjectName);
-        }
-        catch (Exception ex)
-        {
-            logger.PutSymlinkFailed(ex, symLink, destinationObjectName);
-            throw;
-        }
-    }
-
-    public void UploadFile(string localFilePath, string remoteFilePath)
+    public TransferResult UploadAndCreateSignedUrl(TransferRequest request)
     {
         try
         {
             ossClient.SetRegion(Region);
 
-            if (IsRemoteFileExist(remoteFilePath))
+            if (!request.Overwrite && IsRemoteFileExist(request.ObjectKey))
             {
-                ossClient.DeleteObject(BucketName, remoteFilePath);
-                logger.DeletedExistingFile(remoteFilePath);
+                throw new InvalidOperationException($"Remote object already exists: {request.ObjectKey}");
             }
 
-            ossClient.PutObject(BucketName, remoteFilePath, localFilePath);
-            logger.UploadSucceed(localFilePath, remoteFilePath);
+            ossClient.PutObject(BucketName, request.ObjectKey, request.LocalPath);
+            logger.UploadSucceeded(request.LocalPath, request.ObjectKey);
+
+            var expiresAtUtc = DateTimeOffset.UtcNow.AddSeconds(request.ExpiresInSeconds);
+            var signedUriRequest = new GeneratePresignedUriRequest(BucketName, request.ObjectKey, SignHttpMethod.Get)
+            {
+                Expiration = expiresAtUtc.UtcDateTime
+            };
+
+            var signedUri = ossClient.GeneratePresignedUri(signedUriRequest);
+            var signedUrl = signedUri.ToString().Replace("+", "%2B", StringComparison.Ordinal);
+
+            logger.GeneratedSignedUrl(request.ObjectKey, expiresAtUtc);
+
+            return new TransferResult
+            {
+                ObjectKey = request.ObjectKey,
+                OssUri = $"oss://{BucketName}/{request.ObjectKey}",
+                SignedUrl = signedUrl,
+                ExpiresAtUtc = expiresAtUtc
+            };
         }
         catch (Exception ex)
         {
-            logger.UploadFailed(ex, localFilePath, remoteFilePath);
+            logger.UploadFailed(ex, request.LocalPath, request.ObjectKey);
             throw;
         }
     }
 
-    public bool IsRemoteFileExist(string remoteFilePath)
+    public bool IsRemoteFileExist(string objectKey)
     {
         try
         {
             ossClient.SetRegion(Region);
-            return ossClient.DoesObjectExist(BucketName, remoteFilePath);
+            return ossClient.DoesObjectExist(BucketName, objectKey);
         }
         catch (Exception ex)
         {
-            logger.CheckExistFailed(ex, remoteFilePath);
+            logger.CheckExistFailed(ex, objectKey);
             return false;
         }
     }
 }
 
-
 public static partial class AliyunOssServiceLoggers
 {
-    [LoggerMessage(LogLevel.Information, "Put symlink {symLink} to {destinationObjectName} successfully")]
-    public static partial void PutSymlinkSucceed(this ILogger logger, string symLink, string destinationObjectName);
+    [LoggerMessage(LogLevel.Error, "Check object {objectKey} existence failed")]
+    public static partial void CheckExistFailed(this ILogger logger, Exception ex, string objectKey);
 
-    [LoggerMessage(LogLevel.Error, "Put symlink {symLink} to {destinationObjectName} failed")]
-    public static partial void PutSymlinkFailed(this ILogger logger, Exception ex, string symLink, string destinationObjectName);
+    [LoggerMessage(LogLevel.Information, "Uploaded file {localFilePath} to {objectKey} successfully")]
+    public static partial void UploadSucceeded(this ILogger logger, string localFilePath, string objectKey);
 
-    [LoggerMessage(LogLevel.Error, "Check object {remoteFilePath} exist failed")]
-    public static partial void CheckExistFailed(this ILogger logger, Exception ex, string remoteFilePath);
+    [LoggerMessage(LogLevel.Error, "Failed to upload file {localFilePath} to {objectKey}")]
+    public static partial void UploadFailed(this ILogger logger, Exception ex, string localFilePath, string objectKey);
 
-    [LoggerMessage(LogLevel.Information, "Existing file {remoteFilePath} deleted")]
-    public static partial void DeletedExistingFile(this ILogger logger, string remoteFilePath);
-
-    [LoggerMessage(LogLevel.Information, "Upload file {localFilePath} to {remoteFilePath} successfully")]
-    public static partial void UploadSucceed(this ILogger logger, string localFilePath, string remoteFilePath);
-
-    [LoggerMessage(LogLevel.Error, "Upload file {localFilePath} to {remoteFilePath} failed")]
-    public static partial void UploadFailed(this ILogger logger, Exception ex, string localFilePath, string remoteFilePath);
+    [LoggerMessage(LogLevel.Information, "Generated signed download URL for {objectKey}, expires at {expiresAtUtc}")]
+    public static partial void GeneratedSignedUrl(this ILogger logger, string objectKey, DateTimeOffset expiresAtUtc);
 }

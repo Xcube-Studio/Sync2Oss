@@ -1,96 +1,85 @@
-# Sync2OSS
+# Vfiletransfer
 
-### Also available in [English Version](./readme_en.md)
+一个专用的 GitHub Action / .NET CLI：
 
-## 简介
+- 上传单个本地文件到阿里云 OSS
+- 适用于私有读写 Bucket
+- 生成 1 小时有效的签名下载链接
+- 把链接写入 GitHub Actions `output`，方便后续步骤直接消费
 
-Sync2OSS 是一个用于将文件同步到阿里云 OSS 的工具，支持通过 GitHub Actions 以及命令行两种方式使用。当前仅支持阿里云 OSS 作为对象存储服务提供商。
+## 输入参数
 
-## 功能特性
+| 参数 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- |
+| `accessKeyId` | 是 | - | 阿里云 AccessKeyId |
+| `accessKeySecret` | 是 | - | 阿里云 AccessKeySecret |
+| `endpoint` | 是 | - | OSS Endpoint，例如 `oss-cn-shanghai.aliyuncs.com` |
+| `bucketName` | 是 | - | OSS Bucket 名称 |
+| `localPath` | 是 | - | 要上传的本地文件路径，仅支持单文件 |
+| `objectKey` | 否 | 文件名 | OSS 中的目标对象 Key |
+| `region` | 否 | `cn-shanghai` | OSS 区域 |
+| `expiresInSeconds` | 否 | `3600` | 签名下载链接有效期，单位秒 |
+| `overwrite` | 否 | `true` | 远程对象已存在时是否覆盖 |
 
-- 支持通过 GitHub Actions 自动同步文件到阿里云 OSS
-- 支持命令行参数灵活上传本地文件/文件夹或 GitHub Release 资源
-- 支持软链接（Symlink）功能
-- 可自定义保留版本数量、目标目录等参数
-- 日志详细，便于排查问题
+## 输出参数
 
-## 版本说明
+| 输出 | 说明 |
+| --- | --- |
+| `downloadUrl` | 签名下载链接 |
+| `signedUrl` | `downloadUrl` 的别名 |
+| `objectKey` | 上传后的 OSS 对象 Key |
+| `ossUri` | 上传后的 OSS 地址，例如 `oss://bucket/path/file.zip` |
 
-- **v2**：始终跟随 v2 分支实时更新，适合需要最新特性和修复的用户。
-- **Release Tag**：可在 Release 页面查看并选择具体 tag，获得稳定的固定版本。
+## Workflow 示例
 
-> 推荐生产环境使用 Release Tag 版本，保持更新可选用 v2。
-
-## 使用方法
-
-### 1. 作为 GitHub Action 使用
-
-**示例 workflow:**
 ```yaml
-- name: Sync to Aliyun OSS
-  uses: xcube-studio/sync2oss@v2
-  with:
-    accessKeyId: ${{ secrets.OSS_ACCESS_KEY_ID }}
-    accessKeySecret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-    endpoint: oss-cn-example.aliyuncs.com
-    bucketName: my-bucket
-    fromRelease: true
-    repoUrl: yourusername/repo
-    isPre: false
-    keepCount: 2
-    addSymlink: false
-    region: cn-shanghai
+jobs:
+  transfer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build artifact
+        run: echo "hello" > artifact.txt
+
+      - name: Upload to private OSS
+        id: vfiletransfer
+        uses: xcube-studio/sync2oss@Vfiletransfer
+        with:
+          accessKeyId: ${{ secrets.OSS_ACCESS_KEY_ID }}
+          accessKeySecret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
+          endpoint: oss-cn-shanghai.aliyuncs.com
+          bucketName: your-private-bucket
+          localPath: ./artifact.txt
+          objectKey: ci/artifact-${{ github.run_id }}.txt
+          region: cn-shanghai
+          expiresInSeconds: 3600
+
+      - name: Use output in later steps
+        run: |
+          echo "download url: ${{ steps.vfiletransfer.outputs.downloadUrl }}"
+          echo "oss key: ${{ steps.vfiletransfer.outputs.objectKey }}"
 ```
-> 更多参数说明请查阅 [`action.yml`](./action.yml)。
 
-### 2. 命令行方式使用
+## 命令行示例
 
-你也可以在本地或 CI 环境中直接构建并运行 `src` 目录下的可执行文件。
-
-**构建命令：**
 ```bash
 cd src
-dotnet build -c Release -o build
+dotnet build -c Release
+dotnet run -- \
+  --accessKeyId xxx \
+  --accessKeySecret xxx \
+  --endpoint oss-cn-shanghai.aliyuncs.com \
+  --bucketName your-private-bucket \
+  --localPath ./artifact.txt \
+  --objectKey ci/artifact.txt \
+  --region cn-shanghai \
+  --expiresInSeconds 3600 \
+  --overwrite true
 ```
 
-**运行示例：**
-```bash
-# Windows
-build\Sync2Oss.exe --accessKeyId xxx --accessKeySecret xxx --endpoint xxx --bucketName xxx --fromRelease true --repoUrl yourusername/repo
+## 说明
 
-# Linux/macOS
-chmod +x build/Sync2Oss
-./build/Sync2Oss --accessKeyId xxx --accessKeySecret xxx --endpoint xxx --bucketName xxx --fromRelease true --repoUrl yourusername/repo
-```
-
-## 使用方式说明
-
-Sync2OSS 支持两种上传方式：
-
-- **fromRelease 为 True**：自动拉取并上传 GitHub 仓库的最新 Release 资源，无需指定 localPath 和 remoteDir。
-- **fromRelease 为 False**：根据 localPath 和 remoteDir 参数，将本地指定文件/文件夹上传到 OSS 的指定目录。
-
-请根据实际需求选择合适的参数组合。
-
-## 参数说明
-
-| 参数名           | 说明                         | 是否必需 | 默认值   |
-|------------------|------------------------------|----------|----------|
-| accessKeyId      | 阿里云 AccessKeyId           | 是       | -        |
-| accessKeySecret  | 阿里云 AccessKeySecret       | 是       | -        |
-| endpoint         | 阿里云 Endpoint               | 是       | -        |
-| bucketName       | 阿里云 BucketName             | 是       | -        |
-| fromRelease      | 是否从 Release 上传           | 否       | true     |
-| repoUrl          | GitHub 仓库地址               | 否       | -        |
-| isPre            | 是否上传 PreRelease           | 否       | false    |
-| keepCount        | 保留最新几个版本              | 否       | 2        |
-| remoteDir        | 上传到远程目录                | 否       | -        |
-| addSymlink       | 是否添加软链接                | 否       | false    |
-| localPath        | 本地文件/文件夹路径           | 否       | -        |
-| region           | 阿里云 OSS 区域               | 否       | cn-shanghai |
-
-> 详细参数说明请参考 action.yml 或命令行 --help。
-
-## 许可协议
-
-MIT License
+- 如果 `endpoint` 没带协议头，程序会自动补成 `https://`
+- 如果未传 `objectKey`，默认使用本地文件名
+- 当前版本是为 `Vfiletransfer` 分支定制的专用实现，不再兼容旧的 Release 同步模式

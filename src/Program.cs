@@ -38,6 +38,6 @@ public class Program
 
         IServiceProvider provider = services.BuildServiceProvider();
 
-        await provider.GetService<ConsoleService>()!.ExecuteAsync();
+        await provider.GetRequiredService<ConsoleService>().ExecuteAsync();
     }
 }
