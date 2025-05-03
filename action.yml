@@ -1,6 +1,9 @@
 name: "Sync2OSS"
 description: "Sync files to Aliyun OSS with .NET 9"
 author: "XingSora"
+icon: upload-cloud
+color: white
+
 
 inputs:
   accessKeyId:
